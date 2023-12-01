@@ -8,6 +8,9 @@
     "dev": "nodemon src/index -e js,mjs,cjs,json,css,handlebars",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "engines": {
+    "node": ">=18.16.0"
+},
   "type": "module",
   "author": "",
   "license": "ISC",
