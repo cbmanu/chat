@@ -7,8 +7,8 @@ import {Server}  from 'socket.io';
 import Filter from 'bad-words';
 import {generateMessage} from './utils/messages.mjs'
 import {addUser,removeUser,getUser,getUsersInRoom} from './utils/users.mjs'
-
 import { create } from 'express-handlebars';
+import favicon  from 'express-favicon';
 const filter= new Filter()
 
 const app=express();
@@ -18,7 +18,7 @@ const io = new Server(server, {
   retries: 3
 });
 
-const port=process.env.PORT||3000;
+const port=process.env.PORT||8080;
 app.use(express.static(path.join(__dirname,"../public")))
 
 
@@ -98,7 +98,9 @@ io.on('connection', (socket) => {
     })
   });
 
+  app.use(favicon(__dirname + '../public/img/favicon.png'));
   app.use(express.urlencoded({extended: false}));
+
 server.listen(port,(req,res)=>{
     console.log("Server is up and running on ",port)
 })
