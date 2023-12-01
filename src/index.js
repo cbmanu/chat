@@ -9,7 +9,6 @@ import {generateMessage} from './utils/messages.mjs'
 import {addUser,removeUser,getUser,getUsersInRoom} from './utils/users.mjs'
 
 import { create } from 'express-handlebars';
-import { disconnect } from 'process';
 const filter= new Filter()
 
 const app=express();
