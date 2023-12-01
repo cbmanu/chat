@@ -5,44 +5,95 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 import { createServer } from 'node:http';
 import {Server}  from 'socket.io';
 import Filter from 'bad-words';
+import {generateMessage} from './utils/messages.mjs'
+import {addUser,removeUser,getUser,getUsersInRoom} from './utils/users.mjs'
+
+import { create } from 'express-handlebars';
+import { disconnect } from 'process';
 const filter= new Filter()
 
 const app=express();
 const server = createServer(app);
-const io=new Server(server);
+const io = new Server(server, {
+  ackTimeout: 10000,
+  retries: 3
+});
 
 const port=process.env.PORT||3000;
-
-app.set('views',path.join(__dirname,'../views'))
-
 app.use(express.static(path.join(__dirname,"../public")))
 
 
 
+const hbs = create({
+});
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
+app.set('views', path.join(__dirname,'/views'));
+
+
+
+
+
+app.use(express.urlencoded({extended: false}));
+
 app.get('/', (req, res) => {
-    res.send("index.html");
-  });
+    res.render('index');
+    req.params.username
+});
+app.get('/chat', (req, res) => {
+  res.render('chat');
+});
+
+
 
 io.on('connection', (socket) => {
-  socket.emit('greetings',"Welcome to this chat. Have Fun! :)");
-  socket.broadcast.emit("greetings","A new user has joined")
 
+    socket.on('join',({username,room},callback)=>{
+      const {error,user}=addUser({
+        id:socket.id,
+        username,
+        room
+      })
+      if(error){
+        return callback(error)
+      }
+      socket.join(user.room)
+      socket.emit('chat message',generateMessage("Welcome to this chat. Have Fun! :)"));
+      socket.broadcast.to(user.room).emit("chat message",generateMessage(`${user.username} has joined`));
 
-    socket.on('chat message',(msg,callback)=>{
-        io.emit('chat message', filter.clean(msg));
+      io.to(user.room).emit('room data',{
+        users:getUsersInRoom(user.room),
+        room:user.room
+      })
+      callback()
+
+    })
+    
+    socket.on('user message',(msg,callback)=>{
+        const user=getUser(socket.id);
+        io.to(user.room).emit('user message',generateMessage(filter.clean(msg)),user.username);
         callback('The message was recived by the server')
     });
 
     socket.on('geolocation',(coords,callback)=>{
-      io.emit("geolocation",`https://www.google.com/maps/@${coords.latitude},${coords.longitude}`)
+      const user=getUser(socket.id);
+      io.to(user.room).emit("geolocation",generateMessage(`https://www.google.com/maps/@${coords.latitude},${coords.longitude}`),user.username)
       callback("The location was send")
     });
     
     socket.on('disconnect',()=>{
-      io.emit('greetings',"A user have left")
+      const user=removeUser(socket.id);
+      if(user){
+        io.to(user.room).emit('chat message',generateMessage(`${user.username} have left`));
+        io.to(user.room).emit('room data',{
+          users:getUsersInRoom(user.room),
+          room:user.room
+        })
+      }
     })
   });
 
+  app.use(express.urlencoded({extended: false}));
 server.listen(port,(req,res)=>{
     console.log("Server is up and running on ",port)
 })

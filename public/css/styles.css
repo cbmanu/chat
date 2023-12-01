@@ -1,7 +1,16 @@
-body {
-    margin: 0;
+:root {
+    --main-bg-color:#2c2f33;
+    --second-bg-color:#23272a;
+    --time:#888;
+  }
+html,body {
     padding-bottom: 3rem;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--main-bg-color);
+    color: #fff;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 #form {
@@ -12,7 +21,7 @@ body {
     left: 0;
     right: 0;
     display: flex;
-    height: 3rem;
+    height: 10vh;
     box-sizing: border-box;
     backdrop-filter: blur(10px);
 }
@@ -37,18 +46,51 @@ body {
     border-radius: 3px;
     outline: none;
     color: #fff;
+    cursor: pointer;
 }
 
 #messages {
-    list-style-type: none;
-    margin: 0;
+    overflow-wrap: break-word;
+    margin: 0 15px;
     padding: 0;
+    
 }
 
-#messages>li {
-    padding: 0.5rem 1rem;
+#messages>div>a {
+    text-decoration: none;
 }
-
-#messages>li:nth-child(odd) {
-    background: #efefef;
+#messages>div>a>small {
+    color: #888;
+}
+#messages>div>p>small {
+    color: #888;
+}
+.userBox {
+    padding: 20px;
+    width:fit-content;
+    height: min-content;
+    background-color: white;
+    color: #23272a;
+}
+.btn{
+    width:100%;
+    color: #23272a;
+    transition: all .15s;
+}
+.btn:hover{
+    color: #000;
+    font-size: 1.50rem;
+}
+#users{
+    background-color: var(--second-bg-color);
+    height: 90vh;
+}
+.scroll{
+    height: 90vh;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+}
+span{
+    font-size: 1.5rem;
+    vertical-align: middle;
 }
