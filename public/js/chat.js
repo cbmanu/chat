@@ -7,8 +7,13 @@ const messages = document.getElementById('messages');
 const geolocation = document.getElementById('geolocation');
 const roomTitle = document.getElementById('room')
 const usersList = document.getElementById('usersList')
+const messageSound = new Audio('/sounds/message.mp3');
+const activity = document.getElementById('activity');
 
 const {username,room}=Qs.parse(location.search,{ignoreQueryPrefix:true})
+
+
+
 
 form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -22,17 +27,24 @@ form.addEventListener('submit', (e) => {
     button.removeAttribute('disabled')
     input.focus()
 });
-
-socket.on('chat message', (msg,name) => {
+input.addEventListener('input',(e)=>{
+    e.preventDefault();
+    socket.emit('writing');
+})
+socket.on('chat message', (msg) => {
+    activity.textContent='';
+    const container = document.createElement('div');
     const item = document.createElement('p');
     const small=document.createElement('small');
     item.textContent = msg.text+" ";
     small.textContent = moment(msg.createdAt).format('LT');
     item.appendChild(small)
-    messages.appendChild(item);
+    container.appendChild(item);
+    messages.appendChild(container);
 });
 
 socket.on('user message', (msg,name) => {
+    activity.textContent='';
     const container = document.createElement('div');
     const item = document.createElement('p');
     const small=document.createElement('small');
@@ -46,6 +58,19 @@ socket.on('user message', (msg,name) => {
     container.appendChild(item);
     messages.appendChild(container)
 });
+
+socket.on('sound',()=>{
+    messageSound.play()
+})
+let activityTimer;
+socket.on('writing',(user)=>{
+    activity.textContent=`${user} is typing`;
+    clearTimeout(activityTimer);
+    activityTimer=setTimeout(()=>{
+        activity.textContent='';
+    },3000)
+    
+})
 
 geolocation.addEventListener('click', (e) => {
     e.preventDefault();

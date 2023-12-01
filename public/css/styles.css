@@ -53,16 +53,17 @@ html,body {
     overflow-wrap: break-word;
     margin: 0 15px;
     padding: 0;
-    
 }
+
 
 #messages>div>a {
     text-decoration: none;
 }
-#messages>div>a>small {
+#messages>div>p>small {
     color: #888;
 }
-#messages>div>p>small {
+
+#messages>div>a>small {
     color: #888;
 }
 .userBox {

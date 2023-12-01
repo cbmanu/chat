@@ -71,12 +71,18 @@ io.on('connection', (socket) => {
     socket.on('user message',(msg,callback)=>{
         const user=getUser(socket.id);
         io.to(user.room).emit('user message',generateMessage(filter.clean(msg)),user.username);
-        callback('The message was recived by the server')
+        socket.to(user.room).emit('sound');
+        callback('The message was recived by the server');
     });
+    socket.on("writing",()=>{
+      const user=getUser(socket.id);
+      socket.broadcast.to(user.room).emit('writing',(user.username));
+    })
 
     socket.on('geolocation',(coords,callback)=>{
       const user=getUser(socket.id);
       io.to(user.room).emit("geolocation",generateMessage(`https://www.google.com/maps/@${coords.latitude},${coords.longitude}`),user.username)
+      socket.to(user.room).emit('sound');
       callback("The location was send")
     });
     
