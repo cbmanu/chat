@@ -124,16 +124,18 @@ const showUsersList=(users,i)=> {
     if(users){
         roomTitle.textContent=`Users in ${room}`
         users.forEach(user => {
+            const container = document.createElement('div');
             const img=document.createElement('img');
             const span=document.createElement('span');
             const br=document.createElement('br')
             img.height=32;
             img.width=32;
             img.src='/img/greenCircle.png';
-            usersList.appendChild(img);
+            container.style.display='flex'
+            container.appendChild(img);
             span.textContent=`${user.username}`
-            usersList.appendChild(span)
-            usersList.appendChild(br)
+            container.appendChild(span)
+            usersList.appendChild(container)
         })
     }
     

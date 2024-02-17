@@ -90,8 +90,11 @@ html,body {
     height: 90vh;
     overflow-y: scroll;
     scroll-behavior: smooth;
+    display: inline-block;
 }
 span{
     font-size: 1.5rem;
     vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

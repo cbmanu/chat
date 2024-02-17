@@ -9,6 +9,7 @@ import {generateMessage} from './utils/messages.mjs'
 import {addUser,removeUser,getUser,getUsersInRoom} from './utils/users.mjs'
 import { create } from 'express-handlebars';
 import favicon  from 'express-favicon';
+import indexRoutes from './routes/index.routes.js'
 const filter= new Filter()
 
 const app=express();
@@ -35,13 +36,7 @@ app.set('views', path.join(__dirname,'/views'));
 
 app.use(express.urlencoded({extended: false}));
 
-app.get('/', (req, res) => {
-    res.render('index');
-    req.params.username
-});
-app.get('/chat', (req, res) => {
-  res.render('chat');
-});
+app.use(indexRoutes);
 
 
 
@@ -81,7 +76,8 @@ io.on('connection', (socket) => {
 
     socket.on('geolocation',(coords,callback)=>{
       const user=getUser(socket.id);
-      io.to(user.room).emit("geolocation",generateMessage(`https://www.google.com/maps/@${coords.latitude},${coords.longitude}`),user.username)
+      console.log(coords)
+      io.to(user.room).emit("geolocation",generateMessage(`https://www.google.com/maps/search/?api=1&query=${coords.latitude}%2c${coords.longitude}`),user.username)
       socket.to(user.room).emit('sound');
       callback("The location was send")
     });
